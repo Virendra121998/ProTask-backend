@@ -13,6 +13,7 @@ router.post('/signup',(req,res)=>{
             var User=new user({
                 email:req.body.email,
                 password:req.body.password,
+                username:req.body.username,
                 myTask:[],
                 visibleTask:[]
             });

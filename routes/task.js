@@ -3,6 +3,25 @@ var router=express.Router();
 
 var user=require('../Models/User');
 
+router.get('/getAllUsers',(req,res)=>{
+
+    var Users=user.find({}).then((result)=>{
+        let c=1;
+        console.log(result)
+        var listOfUser=result.map((u)=>{
+            let obj={};
+            obj['label']=u.username;
+            obj['value']=c;
+            c++;
+            return obj;
+        })
+        res.send(listOfUser).status(200);
+    }).catch((err)=>{
+        console.log(err);
+    })
+})
+
+
 router.put('/addMyTask',(req,res)=>{
       var User=user.findOne({email:req.body.email}).then((result)=>{
       var newUser=User;
@@ -44,3 +63,5 @@ router.get('/delegateTask',(req,res)=>{
             
     })
 })
+
+module.exports=router;

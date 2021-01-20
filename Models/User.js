@@ -6,6 +6,7 @@ var Schema=mongoose.Schema;
 var schema=new Schema({
     email:{type:String,required:true,validate:validator.isEmail},
     password:{type:String,required:true},
+    username:{type:String,required:true},
     myTask:[{type:String}],
     visibleTask:[{type:String}]
 });
