@@ -1,6 +1,6 @@
 var express=require('express');
 var router=express.Router();
-
+var task=require('../Models/Task');
 var user=require('../Models/User');
 
 router.post('/signup',(req,res)=>{
@@ -15,7 +15,7 @@ router.post('/signup',(req,res)=>{
                 password:req.body.password,
                 username:req.body.username,
                 myTask:[],
-                visibleTask:[]
+                assignedTask:[]
             });
             User.save().then((result)=>{
                 console.log("User Created");
@@ -31,7 +31,7 @@ router.post('/signup',(req,res)=>{
 
 router.post('/login',(req,res)=>{
     user.findByCredentials(req.body.email,req.body.password).then((result)=>{
-        res.send("Successful Login");
+        res.send(result);
     }).catch((e)=>{
         res.status(400).send("Could not find user");
     })
