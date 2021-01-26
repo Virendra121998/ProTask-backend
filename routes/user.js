@@ -1,5 +1,6 @@
 var express=require('express');
-var router=express.Router();
+var router=express.Router({ mergeParams: true });
+
 var task=require('../Models/Task');
 var user=require('../Models/User');
 
@@ -19,7 +20,7 @@ router.post('/signup',(req,res)=>{
             });
             User.save().then((result)=>{
                 console.log("User Created");
-                res.send("User Created");
+                res.send(result);
             }).catch((err)=>{
                 res.send(err)
             });
@@ -30,11 +31,23 @@ router.post('/signup',(req,res)=>{
 });
 
 router.post('/login',(req,res)=>{
-    user.findByCredentials(req.body.email,req.body.password).then((result)=>{
-        res.send(result);
+    
+    user.find({email:req.body.email,password:req.body.password}).then((result)=>{
+        console.log(result)
+        res.send(result[0]);
     }).catch((e)=>{
         res.status(400).send("Could not find user");
     })
+})
+
+router.post('/getUser',(req,res)=>{
+    console.log(req.body)
+   user.findOne({username:req.body.username}).then((result)=>{
+          console.log(result);
+         res.send(result);
+   }).catch((err)=>{
+       res.send(err);
+   })
 })
 
 module.exports=router;

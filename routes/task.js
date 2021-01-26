@@ -1,5 +1,6 @@
 var express=require('express');
-var router=express.Router();
+var router=express.Router({ mergeParams: true });
+
 var task=require('../Models/Task');
 var user=require('../Models/User');
 
@@ -23,9 +24,16 @@ router.get('/getAllUsers',(req,res)=>{
 
 
 router.put('/addMyTask',(req,res)=>{
-      var User=user.findOne({email:req.body.email}).then((result)=>{
-        
-      result.myTask.push(req.body.task);
+      var User=user.findOne({username:req.body.username}).then((result)=>{
+      console.log(result)  
+      let t={
+          Task:req.body.task,
+          status:"Open",
+          progress:0,
+          assignedBy:req.body.username,
+          assignedTo:req.body.username
+      }
+      result.myTask.push(t);
       result.save().then((resul)=>{
         res.send(resul);
        }).catch((err)=>{
