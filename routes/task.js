@@ -163,38 +163,36 @@ router.put('/updateTask',(req,res)=>{
     Update();
 })
 
-router.delete('/deleteTask',(req,res)=>{
+router.put('/deleteTask',(req,res)=>{
     var list=[]
     var deleteuser=[]
     function deleteUser(User){
         return new Promise((resolve,reject)=>{
-            User.myTask.filter(e=>e.Task!==req.body.task)
+           let arr= User.myTask.filter(e=>e.Task!==req.body.task)
+           User.myTask=arr;
+           console.log(User)
             User.save().then((r)=>{
+                console.log(r)
                 resolve(r)
             })
         })
     }
    
-    function ResolveUser(User){
-        return new Promise((resolve,reject)=>{
-            resolve(User)
-        })
-    }
+    
 
     user.find({"myTask.Task":req.body.task}).then((result)=>{
-        if(result.length>0)
-        {
-           result.forEach(u=>list.push(ResolveUser(u)))
-        }
         
+           result.forEach(u=>list.push(deleteUser(u)))
     })
-    Promise.all(list).then((result)=>{
-        result.forEach(e=>deleteuser.push(deleteUser(e)))
-        Promise.all(deleteuser).then((rr)=>{
+    
+        Promise.all(list).then((rr)=>{
+            console.log(rr);
             user.findOne({"assignedTask.Task":req.body.task}).then((r)=>{
                 if(r){
-                    r.assignedTask.filter(element=>element.Task!==req.body.task)
+                   let arr= r.assignedTask.filter(element=>element.Task!==req.body.task)
+                   r.assignedTask=arr
                     r.save().then((resul)=>{
+                        console.log(resul)
                         user.findOne({username:req.body.username}).then((rrr)=>{
                             res.send(rrr)
                         }).catch((err)=>{
@@ -202,9 +200,20 @@ router.delete('/deleteTask',(req,res)=>{
                         })
                     })
                 }
+                else{
+                    user.findOne({username:req.body.username}).then((rrr)=>{
+                        res.send(rrr)
+                    }).catch((err)=>{
+                        res.send(err);
+                    })
+                }
+            }).catch((err)=>{
+                res.send(err)
             })
+        }).catch((err)=>{
+            res.send(err);
         })
-    })
+    
 })
 
 router.post('/delegateTask',(req,res)=>{
