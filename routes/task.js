@@ -59,12 +59,50 @@ router.put('/deletemyTask',(req,res)=>{
     });
 })
 
+router.put('/closeAssignTask',(req,res)=>{
+    var list=[]
+    function UpdateAssignedTo(User){
+        return new Promise((resolve,reject)=>{
+            
+                let i=User.myTask.findIndex(e=>e.Task===req.body.task)
+                User.myTask[i].status="Closed"
+                User.save().then((resul)=>{
+                    console.log(resul)
+                    resolve(resul)
+                }).catch((err)=>{
+                    reject(err)
+                })
+            
+        })
+    }
+
+    function findUserOfTask(){
+       user.find({"myTask.Task":req.body.task}).then((result)=>{
+           result.forEach(e=>list.push(UpdateAssignedTo(e)))
+           Promise.all(list).then((r)=>{
+               user.findOne({"assignedTask.Task":req.body.task}).then((rr)=>{
+                   let i=rr.assignedTask.findIndex(e=>e.Task===req.body.task)
+                   rr.assignedTask[i].status="Closed"
+                   rr.save().then((rrr)=>{
+                       res.send(rrr);
+                   }).catch((err)=>{
+                       res.send(err);
+                   })
+               })
+           })
+       })
+    }
+
+    findUserOfTask();
+})
+
 router.put('/updateTask',(req,res)=>{
     var list=[];
     function UpdateAssignedBy(){
         return new Promise((resolve,reject)=>{
             user.findOne({"assignedTask.Task":req.body.Task}).then((result)=>{
-                
+                if(result!=null)
+                {
                 let i=result.assignedTask.findIndex((e)=>e.Task===req.body.Task)
                 result.assignedTask[i].progress=req.body.progress;
                 result.save().then((r)=>{
@@ -73,6 +111,10 @@ router.put('/updateTask',(req,res)=>{
                 }).catch((err)=>{
                     reject(err);
                 })
+                }
+                else{
+                    resolve(result);
+                }
             })
         })
     }
@@ -92,18 +134,22 @@ router.put('/updateTask',(req,res)=>{
         let User=UpdateAssignedBy();
         User.then((result)=>{
             user.find({"myTask.Task":req.body.Task}).then((result)=>{
+                 if(result){
                  result.forEach(e=>list.push(saveTask(e)))
                  Promise.all(list).then((result)=>{
                      res.send(result)
                  }).catch((err)=>{
                      res.send(err);
                  })
+                }
             })
         })
     }
 
     Update();
 })
+
+
 
 router.get('/delegateTask',(req,res)=>{
       var list=[];
