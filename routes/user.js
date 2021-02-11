@@ -32,9 +32,12 @@ router.post('/signup',(req,res)=>{
 
 router.post('/login',(req,res)=>{
     
-    user.find({email:req.body.email,password:req.body.password}).then((result)=>{
+    user.findOne({email:req.body.email,password:req.body.password}).then((result)=>{
         console.log(result)
-        res.send(result[0]);
+        if(result)
+         res.send(result);
+        else 
+         res.status(400).send("User does not exist");
     }).catch((e)=>{
         res.status(400).send("Could not find user");
     })

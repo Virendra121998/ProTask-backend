@@ -257,12 +257,12 @@ router.post('/delegateTask',(req,res)=>{
             
               let tt=createTask(User);
               tt.then((rr)=>{
-                console.log(req.body.Task,req.body.username);
+                
             
                 User.myTask.push(rr);
                 
                 User.save().then((result)=>{
-                    console.log(result);
+                   
                   resolve(result)  
                 })
               })
@@ -275,29 +275,26 @@ router.post('/delegateTask',(req,res)=>{
            
            result.forEach(u=>{
                updatedUsers.push(UpdateUsers(u))
-           }) 
-           }).then(()=>{
-               
-                   
-                    
-                        Promise.all(updatedUsers).then((resu)=>{
-                            user.findOne({username:req.body.username}).then((result)=>{
-                                var assignTask={
-                                    Task:req.body.Task,
-                                    progress:0,
-                                    status:"Open"
-                                }
-                                result.assignedTask.push(assignTask);
-                                 result.save().then((rr)=>{
-                                     res.send(rr)
-                        }).catch((err)=>{
-                            res.send(err);
-                        })
-                       
-                   })
-               
            })
+           Promise.all(updatedUsers).then((resu)=>{
+            user.findOne({username:req.body.username}).then((result)=>{
+                var assignTask={
+                    Task:req.body.Task,
+                    progress:0,
+                    status:"Open"
+                }
+                result.assignedTask.push(assignTask);
+                 result.save().then((rr)=>{
+                     console.log(rr)
+                     res.send(rr)
+        }).catch((err)=>{
+            res.send(err);
         })
+       
+   })
+
+}) 
+           })
            
       
 })

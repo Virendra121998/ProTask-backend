@@ -9,7 +9,7 @@ var schema=new Schema({
     password:{type:String,required:true},
     username:{type:String,required:true},
     myTask:[task],
-    assignedTask:[task]
+    assignedTask:[task],
 });
 
 
